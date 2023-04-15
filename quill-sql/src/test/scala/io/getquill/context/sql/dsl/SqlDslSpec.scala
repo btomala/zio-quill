@@ -22,6 +22,21 @@ class SqlDslSpec extends Spec {
     }
   }
 
+  "ilike" - {
+    "constant" in {
+      val q = quote {
+        query[TestEntity].filter(t => ILike(t.s) ilike "a")
+      }
+      testContext.run(q).string mustEqual "SELECT t.s, t.i, t.l, t.o, t.b FROM TestEntity t WHERE t.s ilike 'a'"
+    }
+    "string interpolation" in {
+      val q = quote {
+        query[TestEntity].filter(t => t.s ilike s"%${lift("a")}%")
+      }
+      testContext.run(q).string mustEqual "SELECT t.s, t.i, t.l, t.o, t.b FROM TestEntity t WHERE t.s ilike ('%' || ?) || '%'"
+    }
+  }
+
   "forUpdate" in {
     val q: Quoted[Query[TestEntity]] = quote {
       query[TestEntity].filter(t => t.s == "a").forUpdate

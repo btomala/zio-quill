@@ -6,6 +6,10 @@ import io.getquill.context.sql.SqlContext
 trait SqlDsl {
   this: SqlContext[_, _] =>
 
+  implicit class ILike(s1: String) {
+    def ilike(s2: String) = quote(sql"$s1 ilike $s2".pure.asCondition)
+  }
+
   implicit class Like(s1: String) {
     def like(s2: String) = quote(sql"$s1 like $s2".pure.asCondition)
   }
